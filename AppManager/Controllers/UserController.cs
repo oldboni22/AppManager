@@ -16,7 +16,7 @@ public class UserController(ILogger<User> logger,MyDbContext context) : Controll
 
     private string _adminSecret = " ";
 
- 
+
     [HttpGet("{id},adminSecret")]
     public async Task<ActionResult<User>> ReadUserAsync(int id)
     {
@@ -29,7 +29,7 @@ public class UserController(ILogger<User> logger,MyDbContext context) : Controll
                 return NotFound();
             }
             
-            _logger?.LogInformation("Successfully fetched a user " + user);
+            _logger?.LogInformation("Successfully fetched a user");
             return user;
         }
         catch (Exception e)

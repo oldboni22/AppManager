@@ -74,39 +74,3 @@
 2025-02-19 19:56:45.102 +03:00 [INF] Request finished HTTP/2 POST https://localhost:44322/api/App/aboba - 404 null null 2.9949ms
 2025-02-19 19:56:45.104 +03:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: POST https://localhost:44322/api/App/aboba, Response status code: 404
 2025-02-19 19:56:53.285 +03:00 [INF] Application is shutting down...
-2025-02-22 00:17:06.574 +03:00 [INF] Now listening on: https://localhost:7169
-2025-02-22 00:17:07.148 +03:00 [INF] Now listening on: http://localhost:5056
-2025-02-22 00:17:25.549 +03:00 [INF] Application started. Press Ctrl+C to shut down.
-2025-02-22 00:17:25.551 +03:00 [INF] Hosting environment: Development
-2025-02-22 00:17:25.553 +03:00 [INF] Content root path: C:\Users\Пряник\Git\AppManager\AppManager
-2025-02-22 00:20:32.142 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5056/ - null null
-2025-02-22 00:21:52.662 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5056/ - null null
-2025-02-22 00:22:00.559 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5056/ - 499 null null 88706.9054ms
-2025-02-22 00:22:00.562 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5056/ - 307 0 null 7899.5116ms
-2025-02-22 00:22:06.123 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7169/ - null null
-2025-02-22 00:22:06.555 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7169/ - 404 0 null 432.2513ms
-2025-02-22 00:22:06.563 +03:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7169/, Response status code: 404
-2025-02-22 00:22:09.701 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7169/favicon.ico - null null
-2025-02-22 00:22:09.704 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7169/favicon.ico - 404 0 null 3.7444ms
-2025-02-22 00:22:09.708 +03:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7169/favicon.ico, Response status code: 404
-2025-02-22 00:22:24.141 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7169/ - null null
-2025-02-22 00:22:24.156 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7169/ - 404 0 null 15.2382ms
-2025-02-22 00:22:24.163 +03:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7169/, Response status code: 404
-2025-02-22 00:25:06.078 +03:00 [INF] Now listening on: https://localhost:7169
-2025-02-22 00:25:06.288 +03:00 [INF] Now listening on: http://localhost:5056
-2025-02-22 00:25:13.557 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5056/ - null null
-2025-02-22 00:25:14.573 +03:00 [INF] Application started. Press Ctrl+C to shut down.
-2025-02-22 00:25:14.577 +03:00 [INF] Hosting environment: Development
-2025-02-22 00:25:14.580 +03:00 [INF] Content root path: C:\Users\Пряник\Git\AppManager\AppManager
-2025-02-22 00:25:16.440 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5056/ - 307 0 null 3094.4924ms
-2025-02-22 00:25:19.042 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7169/ - null null
-2025-02-22 00:25:19.180 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7169/ - 404 0 null 138.838ms
-2025-02-22 00:25:19.288 +03:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7169/, Response status code: 404
-2025-02-22 00:25:34.613 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7169/favicon.ico - null null
-2025-02-22 00:25:34.620 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7169/favicon.ico - 499 null null 6.9533ms
-2025-02-22 00:25:34.623 +03:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7169/favicon.ico, Response status code: 499
-2025-02-22 00:25:38.132 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5056/ - null null
-2025-02-22 00:25:39.841 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5056/ - 307 0 null 1708.3699ms
-2025-02-22 00:25:40.381 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7169/ - null null
-2025-02-22 00:25:40.388 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7169/ - 404 0 null 7.4103ms
-2025-02-22 00:25:40.394 +03:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7169/, Response status code: 404
