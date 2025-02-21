@@ -35,7 +35,7 @@ public class AppController(MyDbContext context, ILogger<App>? logger) : Controll
             }
             else
             {
-                _logger?.LogInformation("Successfully fetched an app");
+                _logger?.LogInformation("Successfully fetched an app " + result);
                 return result;    
             }
             
