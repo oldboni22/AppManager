@@ -11,7 +11,7 @@ public record Session
     [Column("app_id")]
     public int AppId { get; init; }
 
-    public App App { get; init; }
+    public App App { get; init; } = new();
     
     [Column("aces_token")]
     public required string AcesToken { get; init; }

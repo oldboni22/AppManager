@@ -1,4 +1,5 @@
 ﻿
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
 using AppManager.DataModels;
@@ -9,7 +10,7 @@ namespace AppManager.Controllers;
 
 [Route("api/User")]
 [ApiController]
-public class UserController(ILogger<User> logger,MyDbContext context) : ControllerBase
+public class UserController(ILogger<User> logger, MyDbContext context) : ControllerBase
 {
     private readonly ILogger<User>? _logger = logger;
     private readonly MyDbContext _context = context;
@@ -17,12 +18,32 @@ public class UserController(ILogger<User> logger,MyDbContext context) : Controll
     private string _adminSecret = " ";
 
 
-    [HttpGet("{id},adminSecret")]
-    public async Task<ActionResult<User>> ReadUserAsync(int id)
+    async Task<App?> TryGetApp(string appSecret)
+    {
+        App? app = await _context.Apps.SingleOrDefaultAsync(a => a.Secret == appSecret);
+        return app;
+    }
+
+    bool IsTokenValid(JwtSecurityToken token)
+    {
+        var payload = token.Payload;
+        
+        if (payload.ValidTo < DateTime.Now)
+            return false;
+
+        
+        
+        return true;
+    }
+
+    [HttpGet("{accessToken}")]
+    public async Task<ActionResult<User>> ReadUserAsync(string accessToken)
     {
         try
         {
-            User? user = await _context.Users.SingleOrDefaultAsync(u => u.UserId == id);
+            
+            
+            User? user = await _context.Users.SingleOrDefaultAsync();
             if (user == null)
             {
                 _logger?.LogWarning("A user was not found!");
