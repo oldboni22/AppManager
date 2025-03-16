@@ -43,8 +43,8 @@ public static class JwtAuth
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
-    public static string GenerateUpdateToken(int userId, string hardwareFingerprint)
+    
+    public static string GenerateUpdateToken(int userId)
     {
         var certificate = Certificate.TryGetCertificate("path");
         var token = new JwtSecurityToken

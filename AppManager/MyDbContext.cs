@@ -14,7 +14,6 @@ public class MyDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Session>().HasOne<Login>(s => s.Login);
-        modelBuilder.Entity<Login>().HasOne<User>(log => log.User);
     }
 
     public DbSet<App> Apps { get; set; }
