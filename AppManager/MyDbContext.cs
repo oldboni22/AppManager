@@ -13,10 +13,12 @@ public class MyDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Session>().HasOne<App>(x => x.App);
+        modelBuilder.Entity<Session>().HasOne<Login>(s => s.Login);
+        modelBuilder.Entity<Login>().HasOne<User>(log => log.User);
     }
 
     public DbSet<App> Apps { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Session> Sessions { get; set; }
+    public DbSet<Login> Logins { get; set; }
 }

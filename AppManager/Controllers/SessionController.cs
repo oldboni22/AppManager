@@ -6,18 +6,17 @@ using System.Text;
 
 namespace AppManager.Controllers
 {
-    public class SessionCreateParams(string hardwareFingerprint,string appSecret,string email,string password)
-    {
-        public string HardwareFingerprint { get; init; } = hardwareFingerprint;
-        public string AppSecret { get; init; } = appSecret;
-        public string Email { get; init; } = email;
-        public string Password { get; init; } = password;
-    }
+    public record struct LoginCreateParams
+        (string HardwareFingerprint,string AppSecret,string Email,string Password);
+
+    [Route("Api/Session")]
     public class SessionController(MyDbContext context,ILogger<Session> logger) : ControllerBase
     {
         private readonly MyDbContext _context = context;
         private readonly ILogger<Session> _logger = logger;
 
+
+        // переосмыслить весь класс !!
 
         Task<App?> TryGetAppAsync(string appSecret) =>
             _context.Apps.SingleOrDefaultAsync(app => app.Secret == appSecret);
@@ -35,8 +34,10 @@ namespace AppManager.Controllers
             }
             return result == user.PasswordHash;
         }
+
+
         [HttpPost]
-        public async Task<ActionResult<Session>> CreateSessionAsync(SessionCreateParams @params)
+        public async Task<ActionResult> LoginAsync(LoginCreateParams @params)
         {
             try
             {
@@ -57,24 +58,14 @@ namespace AppManager.Controllers
                     _logger?.LogWarning("The given password is incorect!");
                     return Forbid();
                 }
+                
 
-
-                string accessToken = "";
-                string refreshToken = "";
-
-                var session = new Session
-                {
-                    AppId = app.AppId,
-                    HardwareFingerprint = @params.HardwareFingerprint,
-                    AcesToken = accessToken,
-                    RefreshToken = refreshToken
-                };
-
-                _context.Sessions.Add(session);
+                string updToken = JwtAuth.GenerateUpdateToken(user.UserId,@params.HardwareFingerprint);
+              
                 
                 await _context.SaveChangesAsync();
-                _logger?.LogInformation("Successfully created a new session");
-                return session;
+                _logger?.LogInformation("Successfully created a new login");
+                return Ok();
 
             }
             catch(Exception e)
@@ -83,6 +74,8 @@ namespace AppManager.Controllers
                 throw;
             }
         }
+
+        
 
     }
 }

@@ -7,6 +7,9 @@ namespace AppManager;
 
 public static class JwtAuth
 {
+
+
+    public const string UserIdKey = "user_id";
     private static TokenValidationParameters GetValidationParameters()
     {
         var certificate = Certificate.TryGetCertificate("path");
@@ -18,12 +21,12 @@ public static class JwtAuth
             ValidateIssuerSigningKey = true,
             ValidIssuer = "App_Manager_Backend",
             ValidAudience = "App_Manager_Audience",
-            IssuerSigningKey = certificate.PublicKey
+            IssuerSigningKey = certificate.PublicKey,
+            
         };
     }
-
-
-    public static string GenerateToken(int userId)
+   
+    public static string GenerateAccessToken(int userId)
     {
         var certificate = Certificate.TryGetCertificate("path");
         var token = new JwtSecurityToken
@@ -40,8 +43,36 @@ public static class JwtAuth
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    
-    public static bool IsTokenLegit(string token)
+
+    public static string GenerateUpdateToken(int userId, string hardwareFingerprint)
+    {
+        var certificate = Certificate.TryGetCertificate("path");
+        var token = new JwtSecurityToken
+        (
+            issuer: "App_Manager_Backend",
+            audience: "App_Manager_Audience",
+            claims:
+            [
+                new Claim(UserIdKey, $"{userId}"),
+            ],
+            expires: DateTime.UtcNow.AddDays(30),
+            signingCredentials: new SigningCredentials(certificate.PrivateKey, SecurityAlgorithms.Sha256)
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public static bool IsUpdateTokenLegit(string token,string userId)
+    {
+        var validated = new JwtSecurityTokenHandler().ValidateToken
+        (
+            token,
+            GetValidationParameters()
+            , out var validatedToken
+        );
+        return validated?.FindFirst(UserIdKey)?.Value == userId;     
+    }
+    public static bool IsAccessTokenLegit(string token,string userId)
     {
         var validated = new JwtSecurityTokenHandler().ValidateToken
         (
@@ -49,8 +80,7 @@ public static class JwtAuth
             GetValidationParameters()
             ,out var validatedToken
         );
-
-        return validated == null;
+        return validated?.FindFirst(UserIdKey)?.Value == userId;
     }
 }
 

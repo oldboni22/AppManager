@@ -74,3 +74,8 @@
 2025-02-19 19:56:45.102 +03:00 [INF] Request finished HTTP/2 POST https://localhost:44322/api/App/aboba - 404 null null 2.9949ms
 2025-02-19 19:56:45.104 +03:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: POST https://localhost:44322/api/App/aboba, Response status code: 404
 2025-02-19 19:56:53.285 +03:00 [INF] Application is shutting down...
+2025-03-16 12:21:03.259 +03:00 [INF] Now listening on: https://localhost:7169
+2025-03-16 12:21:03.415 +03:00 [INF] Now listening on: http://localhost:5056
+2025-03-16 12:21:05.897 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-16 12:21:05.900 +03:00 [INF] Hosting environment: Development
+2025-03-16 12:21:05.901 +03:00 [INF] Content root path: C:\Users\Пряник\Git\AppManager\AppManager
