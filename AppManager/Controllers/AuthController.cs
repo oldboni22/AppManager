@@ -9,22 +9,15 @@ namespace AppManager.Controllers;
 public record struct LoginCreateParams
     (string HardwareId,string AppSecret,string Email,string Password);
 
-[Route("api/Login")]
+[Route("api/Auth")]
 [ApiController]
-public class LoginController(MyDbContext context, ILogger<Login> logger) : ControllerBase
+public class AuthController(MyDbContext context, ILogger<Login> logger) : ControllerBase
 {
 
     private readonly MyDbContext _context = context;
     private readonly ILogger<Login> _logger = logger;
 
-
-    Task<App?> TryGetAppAsync(string appSecret) =>
-        _context.Apps.SingleOrDefaultAsync(app => app.Secret == appSecret);
-
-    Task<User?> TryGetUserAsync(string email) =>
-        _context.Users.SingleOrDefaultAsync(user => user.Email == email);
-    
-    
+    #region Utils
     bool IsPasswordValid(User user, string input)
     {
         string result;
@@ -36,18 +29,12 @@ public class LoginController(MyDbContext context, ILogger<Login> logger) : Contr
         return result == user.PasswordHash;
     }
 
-    string GenerateSalt()
-    {
-        var bytes = RandomNumberGenerator.GetBytes(16);
-        return Convert.ToBase64String(bytes);
-    }
-
-    string GenerateDeviceHash(string deviceId, string salt)
+    string GenerateDeviceHash(string hardwareId, string salt)
     {
         string hash;
         using (var sha = SHA256.Create())
         {
-            var bytes = Encoding.UTF8.GetBytes(salt + deviceId);
+            var bytes = Encoding.UTF8.GetBytes(salt + hardwareId);
             hash = Convert.ToBase64String(sha.ComputeHash(bytes));
         }
         
@@ -59,15 +46,16 @@ public class LoginController(MyDbContext context, ILogger<Login> logger) : Contr
         string hash;
         using (var sha = SHA256.Create())
         {
-            var bytes = Encoding.UTF8.GetBytes(login.DeviceSalt + input);
+            var bytes = Encoding.UTF8.GetBytes(login.HardwareSalt + input);
             hash = Convert.ToBase64String(sha.ComputeHash(bytes));
         }
 
-        return hash.Substring(0,16) == login.DeviceHash;
+        return hash.Substring(0,16) == login.HardwareHash;
     }
+    #endregion
     
-    [HttpGet("{hardwareId},{userId}")]
-    public async Task<ActionResult<Login>> TryGetLoginAsync(string hardwareId, int userId)
+    #region Login
+    async Task<Login?> TryGetLoginAsync(string hardwareId, int userId)
     {
         try
         {
@@ -88,23 +76,20 @@ public class LoginController(MyDbContext context, ILogger<Login> logger) : Contr
             throw;
         }
 
-        return NotFound();
+        return null;
     }
-    
-    
-    
-    [HttpPost]
-    public async Task<ActionResult<Login>> CreateLogin(LoginCreateParams @params)
+    [HttpPost("Login/")]
+    public async Task<ActionResult<Login>> CreateLoginAsync(LoginCreateParams @params)
     {
         try
         {
-            App? app = await TryGetAppAsync(@params.AppSecret);
+            App? app = await _context.TryGetAppAsync(@params.AppSecret);
             if (app == null)
             {
                 _logger?.LogWarning("The provided app secret is invalid!");
                 return NotFound();
             }
-            User? user = await TryGetUserAsync(@params.Email);
+            User? user = await _context.TryGetUserAsync(@params.Email);
             if(user == null)
             {
                 _logger?.LogWarning("There's no user associated with the provided email!");
@@ -112,17 +97,17 @@ public class LoginController(MyDbContext context, ILogger<Login> logger) : Contr
             }
             if(IsPasswordValid(user,@params.Password) is false)
             {
-                _logger?.LogWarning("The given password is incorect!");
+                _logger?.LogWarning("The given password is incorrect!");
                 return Forbid();
             }
 
             string updateToken = JwtAuth.GenerateUpdateToken(user.UserId);
-            var salt = GenerateSalt();
+            var salt = this.GenerateSalt();
             
             var login = new Login()
             {
-                DeviceSalt = salt,
-                DeviceHash = GenerateDeviceHash(@params.HardwareId,salt),
+                HardwareSalt = salt,
+                HardwareHash = GenerateDeviceHash(@params.HardwareId,salt),
                 UpdateToken = updateToken,
                 UserId = user.UserId,
             };
@@ -139,5 +124,43 @@ public class LoginController(MyDbContext context, ILogger<Login> logger) : Contr
             throw;
         }
     }
+    #endregion
 
+    #region Session
+
+    [HttpPost("Session/{hardwareId},/{userId}")]
+    public async Task<ActionResult<Session>> CreateSessionAsync(string hardwareId,int userId)
+    {
+        try
+        {
+            var login = await TryGetLoginAsync(hardwareId, userId);
+            if (login == null)
+            {
+                _logger?.LogWarning("Unauthorized attempt to create a session");
+                return Unauthorized();
+            }
+
+            var session = new Session()
+            {
+                AccessToken = JwtAuth.GenerateAccessToken(userId),
+                Login = login,
+                LoginId = login.LoginId
+            };
+
+            await _context.Sessions.AddAsync(session);
+            await _context.SaveChangesAsync();
+            _logger?.LogInformation("Successfully created a session" + session.ToString());
+
+            return session;
+        }
+        catch (Exception e)
+        {
+            _logger?.LogError(e,"An error occured while creating a session");
+            throw;
+        }
+        
+    }
+    #endregion
+    
+    
 }

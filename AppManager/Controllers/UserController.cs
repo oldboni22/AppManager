@@ -14,10 +14,7 @@ public class UserController(ILogger<User> logger, MyDbContext context) : Control
 {
     private readonly ILogger<User>? _logger = logger;
     private readonly MyDbContext _context = context;
-
-    private string _adminSecret = " ";
-
-
+    
     async Task<App?> TryGetApp(string appSecret)
     {
         App? app = await _context.Apps.SingleOrDefaultAsync(a => a.Secret == appSecret);
@@ -59,13 +56,7 @@ public class UserController(ILogger<User> logger, MyDbContext context) : Control
             throw;
         }
     }
-
-
-    string GenerateSalt()
-    {
-        var bytes = RandomNumberGenerator.GetBytes(16);
-        return Convert.ToBase64String(bytes);
-    }
+    
 
     string GeneratePasswordHash(string salt, string password)
     {
@@ -90,13 +81,15 @@ public class UserController(ILogger<User> logger, MyDbContext context) : Control
                 return Unauthorized();
             }
 
-            var salt = GenerateSalt();
+            var salt = this.GenerateSalt();
             var hash = GeneratePasswordHash(salt, password);
 
-            await _context.Users.AddAsync(user with{PasswordSalt = salt,PasswordHash = hash});
+            var newUser = user with { PasswordSalt = salt, PasswordHash = hash };
+            
+            await _context.Users.AddAsync(newUser);
             _logger?.LogInformation("Successfully created an app");
 
-            return CreatedAtAction(nameof(ReadUserAsync), new { id = user.UserId }, user);
+            return newUser;
         }
         catch (Exception e)
         {

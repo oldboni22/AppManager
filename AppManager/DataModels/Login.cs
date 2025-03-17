@@ -14,10 +14,10 @@ public record Login
     
     [Column("device_hash")]
     [MaxLength(16)]
-    public required string DeviceHash { get; init; }
+    public required string HardwareHash { get; init; }
     
     [Column("device_salt")]
-    public required string DeviceSalt { get; init; }
+    public required string HardwareSalt { get; init; }
     
     [Column("user_id")]
     public int UserId { get; init; }
