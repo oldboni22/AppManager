@@ -1,32 +1,22 @@
 using AppManager;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
-
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File("logs/.log")
-    .CreateLogger();
 
-builder.Host.UseSerilog();
+builder.ConfigureSerilog();
 
-
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<MyDbContext>();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddDbContext<MyDbContext>(options => options.UseInMemoryDatabase("MyTestDb"));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -34,6 +24,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
 
 app.Run();
 

@@ -9,13 +9,13 @@ namespace AppManager.Controllers;
 public record struct LoginCreateParams
     (string HardwareId,string AppSecret,string Email,string Password);
 
-[Route("api/Auth")]
+[Route("api/[controller]")]
 [ApiController]
-public class AuthController(MyDbContext context, ILogger<Login> logger) : ControllerBase
+public class AuthController(MyDbContext context, ILogger<Login>? logger) : ControllerBase
 {
 
     private readonly MyDbContext _context = context;
-    private readonly ILogger<Login> _logger = logger;
+    private readonly ILogger<Login>? _logger = logger;
 
     #region Utils
     bool IsPasswordValid(User user, string input)

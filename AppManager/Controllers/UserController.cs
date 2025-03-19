@@ -1,6 +1,4 @@
-﻿
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using AppManager.DataModels;
 using Microsoft.AspNetCore.Mvc;
@@ -8,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppManager.Controllers;
 
-[Route("api/User")]
+[Route("api/[controller]")]
 [ApiController]
-public class UserController(ILogger<User> logger, MyDbContext context) : ControllerBase
+public class UserController(ILogger<User>? logger, MyDbContext context) : ControllerBase
 {
     private readonly ILogger<User>? _logger = logger;
     private readonly MyDbContext _context = context;
@@ -21,25 +19,11 @@ public class UserController(ILogger<User> logger, MyDbContext context) : Control
         return app;
     }
 
-    bool IsTokenValid(JwtSecurityToken token)
-    {
-        var payload = token.Payload;
-        
-        if (payload.ValidTo < DateTime.Now)
-            return false;
-
-        
-        
-        return true;
-    }
-
     [HttpGet("{accessToken}")]
-    public async Task<ActionResult<User>> ReadUserAsync(string accessToken)
+    public async Task<ActionResult<User?>> ReadUserAsync(string accessToken)
     {
         try
         {
-            
-            
             User? user = await _context.Users.SingleOrDefaultAsync();
             if (user == null)
             {
@@ -70,8 +54,8 @@ public class UserController(ILogger<User> logger, MyDbContext context) : Control
         return hash;
     }
 
-    [HttpPost("{password},{appSecret}")]
-    public async Task<ActionResult<User>> CreateUserAsync(User user,string password,string appSecret)
+    [HttpPost("{email},{password},{appSecret}")]
+    public async Task<ActionResult<User>> CreateUserAsync(string email,string password,string appSecret)
     {
         try
         {
@@ -82,9 +66,13 @@ public class UserController(ILogger<User> logger, MyDbContext context) : Control
             }
 
             var salt = this.GenerateSalt();
-            var hash = GeneratePasswordHash(salt, password);
 
-            var newUser = user with { PasswordSalt = salt, PasswordHash = hash };
+            var newUser = new User()
+            {
+                Email = email,
+                PasswordSalt = salt,
+                PasswordHash = GeneratePasswordHash(salt,password)
+            };
             
             await _context.Users.AddAsync(newUser);
             _logger?.LogInformation("Successfully created an app");

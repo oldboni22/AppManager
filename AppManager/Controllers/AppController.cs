@@ -1,21 +1,19 @@
 ﻿using System.Security.Cryptography;
-using System.Text;
 using AppManager.DataModels;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppManager.Controllers;
 
 
-[Route("api/App")]
+[Route("api/[controller]")]
 [ApiController]
 public class AppController(MyDbContext context, ILogger<App>? logger) : ControllerBase
 {
     private readonly MyDbContext _context = context;
     private readonly ILogger<App>? _logger = logger;
 
-    private string _adminSecret = " ";
+    private string _adminSecret = "секрет";
     
     [HttpGet("{id},{secret}")]
     public async Task<ActionResult<App>> ReadAppAsync(int id,string secret)
@@ -64,10 +62,12 @@ public class AppController(MyDbContext context, ILogger<App>? logger) : Controll
                 return Unauthorized();
             }
 
-            _context.Apps.Add(app with{Secret = GenerateAppSecret()});
+            var newApp = app with { Secret = GenerateAppSecret() };
+            
+            _context.Apps.Add(newApp);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(ReadAppAsync),new {id = app.AppId,secret = app.Secret} ,app);
+            return newApp;
         }
         catch (Exception e)
         {

@@ -28,7 +28,7 @@ public static class JwtAuth
    
     public static string GenerateAccessToken(int userId)
     {
-        var certificate = Certificate.TryGetCertificate("path");
+        var certificate = Certificate.TryGetCertificate("C:\\Users\\Пряник\\RiderProjects\\AppManager\\AppManager");
         var token = new JwtSecurityToken
         (
             issuer: "App_Manager_Backend",
@@ -46,7 +46,7 @@ public static class JwtAuth
     
     public static string GenerateUpdateToken(int userId)
     {
-        var certificate = Certificate.TryGetCertificate("path");
+        var certificate = Certificate.TryGetCertificate("C:\\Users\\Пряник\\RiderProjects\\AppManager\\AppManager");
         var token = new JwtSecurityToken
         (
             issuer: "App_Manager_Backend",
